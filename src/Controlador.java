@@ -3,58 +3,35 @@ import exceptions.AutoAmizadeException;
 import exceptions.AutoRecadoException;
 import exceptions.ContaJaExisteException;
 import exceptions.ConvitePendenteException;
-import exceptions.JackutException;
 import exceptions.LoginOuSenhaInvalidosException;
 import exceptions.UsuarioJaAmigoException;
 import exceptions.UsuarioNaoCadastradoException;
 
-import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 public class Controlador {
 
-    private static final String ARQUIVO_DADOS = "data/dados.dat";
-
+    private final Repositorio repositorio;
     private Map<String, Usuario> usuarios;
     private transient Map<String, String> sessoes;
 
     public Controlador() {
-        this.sessoes = new HashMap<>();
-        this.usuarios = carregarUsuarios();
-    }
-
-    // persistencia
-    @SuppressWarnings("unchecked")
-    private Map<String, Usuario> carregarUsuarios() {
-        File arquivo = new File(ARQUIVO_DADOS);
-        if (!arquivo.exists()) return new HashMap<>();
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(arquivo))) {
-            return (Map<String, Usuario>) in.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            return new HashMap<>();
-        }
-    }
-
-    private void salvarUsuarios() {
-        new File("data").mkdirs();
-        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(ARQUIVO_DADOS))) {
-            out.writeObject(this.usuarios);
-        } catch (IOException e) {
-            throw new JackutException("Erro ao salvar dados: " + e.getMessage());
-        }
+        this.repositorio = new Repositorio();
+        this.sessoes     = new HashMap<>();
+        this.usuarios    = repositorio.carregar();
     }
 
     // sistema
     public void zerarSistema() {
         this.usuarios.clear();
         this.sessoes.clear();
-        new File(ARQUIVO_DADOS).delete();
+        repositorio.apagar();
     }
 
     public void encerrarSistema() {
-        salvarUsuarios();
+        repositorio.salvar(this.usuarios);
     }
 
     // user story 1 - conta
