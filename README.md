@@ -55,7 +55,7 @@ data/
 ### Compilação
 ```bash
 # Windows
-javac -encoding UTF-8 -cp "lib\easyaccept.jar" -d bin src\exceptions\*.java src\entities\*.java src\*.java
+javac -encoding UTF-8 -cp "lib\easyaccept.jar" -d bin src\exceptions\*.java src\entities\*.java src\Repositorio.java src\Controlador.java src\Facade.java src\Main.java
 ```
 
 ### Execução dos testes
